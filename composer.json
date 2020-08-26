@@ -5,5 +5,13 @@
 		"workerman/workerman": "4.0.7",
 		"nikic/fast-route": "1.3.0",
 		"twig/twig": "3.0.5"
+	},
+	"suggest": {
+		"ext-event": "Even better performance."
+	},
+	"autoload": {
+		"psr-4": {
+			"Stratomatta\\": "src"
+		}
 	}
 }
