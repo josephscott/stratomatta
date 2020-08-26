@@ -11,6 +11,10 @@ class Server extends Worker {
 		array $context_options = []
 	) {
 		parent::__construct( $socket_name, $context_options );
+		$this->onMessage = [$this, 'onMessage'];
+	}
+
+	public function onMessage( $connection, $request ) {
 	}
 
 	public function start() {
