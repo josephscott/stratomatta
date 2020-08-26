@@ -3,6 +3,7 @@ namespace Stratomatta;
 
 use Workerman\Worker;
 use Workerman\Protocols\Http\Response;
+use FastRoute\Dispatcher;
 
 class Server extends Worker {
 	protected $routes = [];
@@ -21,6 +22,20 @@ class Server extends Worker {
 	}
 
 	public function onMessage( $connection, $request ) {
+		$match = $this->dispatcher->dispatch(
+			$request->method(),
+			$request->path()
+		);
+
+		if ( $match[0] === Dispatcher::FOUND ) {
+			$handler = $match[1];
+			$vars = $match[2];
+
+			if ( is_callable( $handler ) ) {
+				$connection->send( $handler( $request ) );
+				return true;
+			}
+		}
 	}
 
 	public function start() {
