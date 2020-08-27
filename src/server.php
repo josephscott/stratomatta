@@ -32,12 +32,25 @@ class Server extends Worker {
 		);
 
 		if ( $match[0] === Dispatcher::FOUND ) {
-			// $match[1] = handler
-			// $match[2] = args
+			$handler = $match[1];
+			$args = $match[2];
 
-			if ( is_callable( $match[1] ) ) {
-				$connection->send( $match[1]( $request, $match[2] ) );
+			if ( is_callable( $handler ) ) {
+				$connection->send( $handler( $request, $args ) );
 				return true;
+			}
+
+			if ( is_readable( $handler ) ) {
+				$call_file = function( $handler ) use ( $request, $args ) {
+					ob_start();
+					require $handler;
+					$out = ob_get_contents();
+					ob_end_clean();
+					return $out;
+				};
+
+				$connection->send( $call_file( $handler ) );
+				return;
 			}
 		}
 
