@@ -41,6 +41,11 @@ class Server extends Worker {
 			}
 		}
 
+		if ( $match[0] === Dispatcher::NOT_FOUND ) {
+			$connection->send( new Response( 404, [], 'Not Found' ) );
+			return;
+		}
+
 		if ( $match[0] === Dispatcher::METHOD_NOT_ALLOWED ) {
 			$connection->send( new Response( 405, [], 'Method Not Allowed' ) );
 			return;
