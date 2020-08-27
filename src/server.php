@@ -37,25 +37,30 @@ class Server extends Worker {
 		);
 
 		if ( $match[0] === Dispatcher::FOUND ) {
-			$handler = $match[1];
-			$args = $match[2];
+			try {
+				$handler = $match[1];
+				$args = $match[2];
 
-			if ( is_callable( $handler ) ) {
-				$connection->send( $handler( $request, $args ) );
-				return true;
-			}
+				if ( is_callable( $handler ) ) {
+					$connection->send( $handler( $request, $args ) );
+					return true;
+				}
 
-			if ( is_readable( $handler ) ) {
-				$call_file = function( $handler ) use ( $request, $args ) {
-					ob_start();
-					require $handler;
-					$out = ob_get_contents();
-					ob_end_clean();
-					return $out;
-				};
+				if ( is_readable( $handler ) ) {
+					$call_file = function( $handler ) use ( $request, $args ) {
+						ob_start();
+						require $handler;
+						$out = ob_get_contents();
+						ob_end_clean();
+						return $out;
+					};
 
-				$connection->send( $call_file( $handler ) );
-				return;
+					$connection->send( $call_file( $handler ) );
+					return;
+				}
+			} catch ( \Throwable $e ) {
+				error_log( print_r( $e, true ) );
+				$connection->send( new Response( 500, [], 'Fatal Error' ) );
 			}
 		}
 
