@@ -21,6 +21,10 @@ class Server extends Worker {
 		$this->routes['GET'][] = [$path, $callback];
 	}
 
+	public function post( $path, $callback ) {
+		$this->routes['POST'][] = [$path, $callback];
+	}
+
 	public function onMessage( $connection, $request ) {
 		$match = $this->dispatcher->dispatch(
 			$request->method(),
