@@ -40,6 +40,11 @@ class Server extends Worker {
 				return true;
 			}
 		}
+
+		if ( $match[0] === Dispatcher::METHOD_NOT_ALLOWED ) {
+			$connection->send( new Response( 405, [], 'Method Not Allowed' ) );
+			return;
+		}
 	}
 
 	public function start() {
