@@ -17,6 +17,11 @@ class Server extends Worker {
 		$this->onMessage = [$this, 'onMessage'];
 	}
 
+	public function any( $path, $callback ) {
+		$this->get( $path, $callback );
+		$this->post( $path, $callback );
+	}
+
 	public function get( $path, $callback ) {
 		$this->routes['GET'][] = [$path, $callback];
 	}
