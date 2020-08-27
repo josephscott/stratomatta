@@ -28,11 +28,11 @@ class Server extends Worker {
 		);
 
 		if ( $match[0] === Dispatcher::FOUND ) {
-			$handler = $match[1];
-			$vars = $match[2];
+			// $match[1] = handler
+			// $match[2] = args
 
-			if ( is_callable( $handler ) ) {
-				$connection->send( $handler( $request ) );
+			if ( is_callable( $match[1] ) ) {
+				$connection->send( $match[1]( $request, $match[2] ) );
 				return true;
 			}
 		}
