@@ -1,3 +1,16 @@
 <h1>Home</h1>
 
-<?php print_r( $args ); ?>
+<hr />
+<pre>
+<?php print_r( $server->args ); ?>
+</pre>
+
+<hr />
+<pre>
+<?php print_r( $server->container ); ?>
+</pre>
+
+<hr />
+<pre>
+<?php print_r( $server->request->method() ); ?>
+</pre>

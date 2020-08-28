@@ -8,6 +8,7 @@ use FastRoute\Dispatcher;
 class Server extends Worker {
 	protected $routes = [];
 	protected $dispatcher = false;
+	protected $container = [];
 
 	public function __construct(
 		string $socket_name = '',
@@ -15,6 +16,14 @@ class Server extends Worker {
 	) {
 		parent::__construct( $socket_name, $context_options );
 		$this->onMessage = [$this, 'onMessage'];
+	}
+
+	public function container_add( $thing ) {
+		$this->container[] = $thing;
+	}
+
+	public function container_get( $thing ) {
+		return $this->container[$thing];
 	}
 
 	public function any( $path, $callback ) {
@@ -39,15 +48,19 @@ class Server extends Worker {
 		if ( $match[0] === Dispatcher::FOUND ) {
 			try {
 				$handler = $match[1];
-				$args = $match[2];
+
+				$server = new \StdClass();
+				$server->request = $request;
+				$server->args = $match[2];
+				$server->container = $this->container;
 
 				if ( is_callable( $handler ) ) {
-					$connection->send( $handler( $request, $args ) );
+					$connection->send( $handler( $server ) );
 					return true;
 				}
 
 				if ( is_readable( $handler ) ) {
-					$call_file = function( $handler ) use ( $request, $args ) {
+					$call_file = function( $handler ) use ( $server ) {
 						ob_start();
 						require $handler;
 						$out = ob_get_contents();
