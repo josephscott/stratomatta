@@ -1,6 +1,7 @@
 {
 	"name": "josephscott/stratomatta",
 	"type": "library",
+	"license": "MIT",
 	"require": {
 		"php": ">=8.1",
 		"workerman/workerman": "4.0.7",
