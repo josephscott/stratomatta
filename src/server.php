@@ -25,6 +25,10 @@ class Server extends Worker {
 		string $path,
 		string|callable $callback
 	):void {
-		$this->routes[ strtoupper( $method ) ][] = [ $path, $callback ];
+		$this->routes[strtoupper( $method )][] = [ $path, $callback ];
+	}
+
+	public function start():void {
+		\Workerman\Worker::runAll();
 	}
 }
