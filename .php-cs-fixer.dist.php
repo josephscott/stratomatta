@@ -173,7 +173,7 @@ $rules = [
 $finder = Finder::create()
 	->in( [
 		__DIR__ . '/src',
-		__DIR__ . '/tests',
+		__DIR__ . '/demo',
 	] )
 	->name( '*.php' )
 	->ignoreDotFiles( true )
