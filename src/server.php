@@ -10,10 +10,21 @@ use Workerman\Protocols\Http\Response;
 use Workerman\Worker;
 
 class Server extends Worker {
+	protected $routes = [];
+
 	public function __construct(
 		string $socket_name = 'http://localhost:7171',
 		array $context_options = []
 	) {
 		parent::__construct( $socket_name, $context_options );
+		$this->onMessage = [$this, 'onMessage'];
+	}
+
+	public function add_route(
+		string $method,
+		string $path,
+		callable $callback
+	):void {
+		$this->routes[$method][] = [ $path, $callback ];
 	}
 }
