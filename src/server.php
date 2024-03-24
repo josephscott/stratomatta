@@ -23,8 +23,8 @@ class Server extends Worker {
 	public function add_route(
 		string $method,
 		string $path,
-		callable $callback
+		string|callable $callback
 	):void {
-		$this->routes[$method][] = [ $path, $callback ];
+		$this->routes[ strtoupper( $method ) ][] = [ $path, $callback ];
 	}
 }
