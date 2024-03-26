@@ -39,6 +39,38 @@ class Server extends Worker {
 		$this->routes[strtoupper( $method )][] = [ $path, $callback ];
 	}
 
+	public function onMessage(
+		TcpConnection $connection,
+		Request $request
+	):void {
+		$match = $this->dispatcher->dispatch(
+			$request->method(),
+			$request->path()
+		);
+
+		if ( $match[0] === Dispatcher::FOUND ) {
+			try {
+				$handler = $match[1];
+
+				if ( is_callable( $handler ) ) {
+					$connection->send( $handler( ) );
+					return;
+				}
+			} catch ( \Throwable $e ) {
+				error_log( var_export( $e, true ) );
+				return;
+			}
+		}
+
+		if ( $match[0] === Dispatcher::NOT_FOUND ) {
+			return;
+		}
+
+		if ( $match[0] === Dispatcher::METHOD_NOT_ALLOWED ) {
+			return;
+		}
+	}
+
 	public function start():void {
 		$this->dispatcher = \FastRoute\cachedDispatcher(
 			function ( \FastRoute\RouteCollector $r ) {
