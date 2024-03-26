@@ -52,8 +52,8 @@ class Server extends Worker {
 			try {
 				$handler = $match[1];
 
-				if ( is_callable( $handler ) ) {
-					$connection->send( $handler( ) );
+				if ( \is_callable( $handler ) ) {
+					$connection->send( $handler() );
 					return;
 				}
 			} catch ( \Throwable $e ) {
