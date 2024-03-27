@@ -39,6 +39,29 @@ class Server extends Worker {
 		$this->routes[strtoupper( $method )][] = [ $path, $callback ];
 	}
 
+	public function do_route(
+		string|callable $handler,
+		TcpConnection $connection
+	):void {
+		if ( \is_callable( $handler ) ) {
+			$connection->send( $handler() );
+			return;
+		}
+
+		if ( is_readable( $handler ) ) {
+			$call_file = function ( $handler ) {
+				ob_start();
+				require $handler;
+				$out = ob_get_contents();
+				ob_end_clean();
+				return $out;
+			};
+
+			$connection->send( $call_file( $handler ) );
+			return;
+		}
+	}
+
 	public function onMessage(
 		TcpConnection $connection,
 		Request $request
@@ -50,27 +73,13 @@ class Server extends Worker {
 
 		if ( $match[0] === Dispatcher::FOUND ) {
 			try {
-				$handler = $match[1];
-
-				if ( \is_callable( $handler ) ) {
-					$connection->send( $handler() );
-					return;
-				}
-
-				if ( is_readable( $handler ) ) {
-					$call_file = function( $handler ) {
-						ob_start();
-						require $handler;
-						$out = ob_get_contents();
-						ob_end_clean();
-						return $out;
-					};
-
-					$connection->send( $call_file( $handler ) );
-					return;
-				}
+				$this->do_route( $match[1], $connection );
+				return;
 			} catch ( \Throwable $e ) {
 				error_log( var_export( $e, true ) );
+				if ( isset( $this->routes['__500__'] ) ) {
+					$this->do_route( $this->routes['__500__'], $connection );
+				}
 				return;
 			}
 		}
