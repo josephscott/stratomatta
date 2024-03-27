@@ -56,6 +56,19 @@ class Server extends Worker {
 					$connection->send( $handler() );
 					return;
 				}
+
+				if ( is_readable( $handler ) ) {
+					$call_file = function( $handler ) {
+						ob_start();
+						require $handler;
+						$out = ob_get_contents();
+						ob_end_clean();
+						return $out;
+					};
+
+					$connection->send( $call_file( $handler ) );
+					return;
+				}
 			} catch ( \Throwable $e ) {
 				error_log( var_export( $e, true ) );
 				return;
