@@ -79,16 +79,20 @@ class Server extends Worker {
 				error_log( var_export( $e, true ) );
 				if ( isset( $this->routes['__500__'] ) ) {
 					$this->do_route( $this->routes['__500__'], $connection );
+				} else {
+					$connection->send( new Response( 500, [], 'Fatal Error' ) );
 				}
 				return;
 			}
 		}
 
 		if ( $match[0] === Dispatcher::NOT_FOUND ) {
+			$connection->send( new Response( 404, [], 'Not Found' ) );
 			return;
 		}
 
 		if ( $match[0] === Dispatcher::METHOD_NOT_ALLOWED ) {
+			$connection->send( new Response( 405, [], 'Method Not Allowed' ) );
 			return;
 		}
 	}
