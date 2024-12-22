@@ -1,0 +1,4 @@
+!vendor/workerman/workerman
+!vendor/nikic/fast-route
+!vendor/pestphp/pest
+!vendor/josephscott/amulet
