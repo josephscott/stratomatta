@@ -1,3 +1,3 @@
 # stratomatta
 
-<img src="https://github.com/josephscott/stratomatta/workflows/tests/badge.svg">
+<img src="https://github.com/josephscott/stratomatta/workflows/tests.yml/badge.svg">
